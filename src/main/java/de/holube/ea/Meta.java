@@ -6,14 +6,17 @@ import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
 import io.jenetics.util.Factory;
 import io.jenetics.util.ISeq;
+import io.jenetics.util.RandomRegistry;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 import static io.jenetics.engine.Limits.bySteadyFitness;
 
 public class Meta extends AbstractEA {
+
+    private static final int META_RANDOM_SEED = 245698;
 
     public static void main(String[] args) {
         new Meta().run();
@@ -26,28 +29,29 @@ public class Meta extends AbstractEA {
     }
 
     private static int evalMeta(Genotype<MetaGene> gt) {
+        final int limit = 500;
+        RandomRegistry.random(new Random(META_RANDOM_SEED));
+
         MetaModel metaModel = gt.gene().metaModel();
-        Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(32, 0.1));
+        Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(8, 0.1));
 
         Engine<BitGene, Integer> engine = Engine
                 .builder(Meta::eval, gtf)
                 .populationSize(metaModel.population())
-                //.survivorsSelector(new TournamentSelector<>(5))
-                //.offspringSelector(new RouletteWheelSelector<>())
                 .alterers(
-                        new Mutator<>(0.15)
+                        new Mutator<>(metaModel.mutationRate())
                 )
                 .build();
 
         List<EvolutionResult<BitGene, Integer>> results = engine.stream()
                 .limit(bySteadyFitness(50))
-                .limit(500)
+                .limit(limit)
                 .toList();
-        return results.size();
+        return limit - results.size();
     }
 
     public void run() {
-        Factory<Genotype<MetaGene>> gtf = Genotype.of(MetaChromosome.of(ISeq.of(new MetaGene(new MetaModel(20)))));
+        Factory<Genotype<MetaGene>> gtf = Genotype.of(MetaChromosome.of(ISeq.of(new MetaGene(MetaModel.getRandom()))));
 
         Engine<MetaGene, Integer> engine = Engine
                 .builder(Meta::evalMeta, gtf)
@@ -55,12 +59,12 @@ public class Meta extends AbstractEA {
                 //.survivorsSelector(new TournamentSelector<>(5))
                 //.offspringSelector(new RouletteWheelSelector<>())
                 .alterers(
-                        new Mutator<>(0.15)
+                        new Mutator<>(1)
                 )
                 .build();
 
         List<EvolutionResult<MetaGene, Integer>> results = engine.stream()
-                //.limit(bySteadyFitness(50))
+                .limit(bySteadyFitness(50))
                 .limit(500)
                 .toList();
         Genotype<MetaGene> best = results.stream().collect(EvolutionResult.toBestGenotype());
@@ -72,10 +76,14 @@ public class Meta extends AbstractEA {
         plot(genericResults);
     }
 
-    private record MetaModel(int population) {
+    private record MetaModel(
+            int population,
+            double mutationRate
+    ) {
         public static MetaModel getRandom() {
             return new MetaModel(
-                    ThreadLocalRandom.current().nextInt(5000)
+                    RandomRegistry.random().nextInt(1, 50),
+                    RandomRegistry.random().nextDouble()
             );
         }
 
@@ -83,6 +91,7 @@ public class Meta extends AbstractEA {
         public String toString() {
             return "MetaModel{" +
                     "population=" + population +
+                    ", mutationRate=" + mutationRate +
                     '}';
         }
     }
@@ -110,6 +119,13 @@ public class Meta extends AbstractEA {
         @Override
         public boolean isValid() {
             return true;
+        }
+
+        @Override
+        public String toString() {
+            return "MetaGene{" +
+                    "metaModel=" + metaModel +
+                    '}';
         }
     }
 
@@ -160,6 +176,13 @@ public class Meta extends AbstractEA {
         @Override
         public boolean isValid() {
             return iSeq.stream().allMatch(MetaGene::isValid);
+        }
+
+        @Override
+        public String toString() {
+            return "MetaChromosome{" +
+                    "iSeq=" + iSeq +
+                    '}';
         }
     }
 
