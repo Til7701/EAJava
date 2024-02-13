@@ -8,6 +8,8 @@ import io.jenetics.util.Factory;
 
 import java.util.List;
 
+import static io.jenetics.engine.Limits.bySteadyFitness;
+
 public class Main extends AbstractEA {
 
     private static int eval(Genotype<BitGene> gt) {
@@ -17,27 +19,25 @@ public class Main extends AbstractEA {
     }
 
     public static void main(String[] args) {
-        Factory<Genotype<BitGene>> gtf =
-                Genotype.of(BitChromosome.of(16, 0.5));
+        Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(32, 0.1));
 
         Engine<BitGene, Integer> engine = Engine
                 .builder(Main::eval, gtf)
-                .populationSize(500)
-                .survivorsSelector(new TournamentSelector<>(5))
-                .offspringSelector(new RouletteWheelSelector<>())
+                .populationSize(400)
+                //.survivorsSelector(new TournamentSelector<>(5))
+                //.offspringSelector(new RouletteWheelSelector<>())
                 .alterers(
-                        new MultiPointCrossover<>(0.2),
                         new Mutator<>(0.15)
                 )
                 .build();
 
         List<EvolutionResult<BitGene, Integer>> results = engine.stream()
-                .limit(100)
+                .limit(bySteadyFitness(50))
+                .limit(500)
                 .toList();
         Genotype<BitGene> best = results.stream().collect(EvolutionResult.toBestGenotype());
 
         System.out.println(best);
-
         plot(results);
     }
 

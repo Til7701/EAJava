@@ -30,9 +30,15 @@ public class GenerationStatisticsList {
         );
     }
 
-    public List<Double> medianFitness() {
+    public List<Double> averageFitness() {
         return generationStatistics.stream()
                 .map(stats -> stats.fitnessStats.getAverage())
+                .toList();
+    }
+
+    public List<Double> bestFitness() {
+        return generationStatistics.stream()
+                .map(stats -> (double) stats.fitnessStats.getMax())
                 .toList();
     }
 
