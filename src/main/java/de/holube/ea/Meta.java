@@ -1,5 +1,8 @@
 package de.holube.ea;
 
+import de.holube.ea.meta.MetaChromosome;
+import de.holube.ea.meta.MetaGene;
+import de.holube.ea.meta.MetaModel;
 import de.holube.ea.util.AbstractEA;
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
@@ -8,8 +11,8 @@ import io.jenetics.util.Factory;
 import io.jenetics.util.ISeq;
 import io.jenetics.util.RandomRegistry;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import static io.jenetics.engine.Limits.bySteadyFitness;
@@ -47,7 +50,11 @@ public class Meta extends AbstractEA {
                 .limit(bySteadyFitness(50))
                 .limit(limit)
                 .toList();
-        return limit - results.size();
+
+        final Optional<Integer> bestFitness = results.stream()
+                .map(EvolutionResult::bestFitness)
+                .max(Integer::compare);
+        return limit - results.size() + bestFitness.orElse(0);
     }
 
     public void run() {
@@ -74,116 +81,6 @@ public class Meta extends AbstractEA {
                 .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                 .toList();
         plot(genericResults);
-    }
-
-    private record MetaModel(
-            int population,
-            double mutationRate
-    ) {
-        public static MetaModel getRandom() {
-            return new MetaModel(
-                    RandomRegistry.random().nextInt(1, 50),
-                    RandomRegistry.random().nextDouble()
-            );
-        }
-
-        @Override
-        public String toString() {
-            return "MetaModel{" +
-                    "population=" + population +
-                    ", mutationRate=" + mutationRate +
-                    '}';
-        }
-    }
-
-    private record MetaGene(MetaModel metaModel) implements Gene<MetaModel, MetaGene> {
-        public static MetaGene getRandom() {
-            return new MetaGene(MetaModel.getRandom());
-        }
-
-        @Override
-        public MetaModel allele() {
-            return metaModel;
-        }
-
-        @Override
-        public MetaGene newInstance() {
-            return new MetaGene(MetaModel.getRandom());
-        }
-
-        @Override
-        public MetaGene newInstance(MetaModel value) {
-            return new MetaGene(value);
-        }
-
-        @Override
-        public boolean isValid() {
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            return "MetaGene{" +
-                    "metaModel=" + metaModel +
-                    '}';
-        }
-    }
-
-    private static class MetaChromosome implements Chromosome<MetaGene> {
-
-        private final int length;
-        private ISeq<MetaGene> iSeq;
-
-        public MetaChromosome(ISeq<MetaGene> genes) {
-            this.iSeq = genes;
-            this.length = iSeq.length();
-        }
-
-        public static MetaChromosome of(ISeq<MetaGene> genes) {
-            return new MetaChromosome(genes);
-        }
-
-        @Override
-        public Chromosome<MetaGene> newInstance(ISeq<MetaGene> iSeq) {
-            this.iSeq = iSeq;
-            return this;
-        }
-
-        @Override
-        public MetaGene get(int index) {
-            return iSeq.get(index);
-        }
-
-        @Override
-        public int length() {
-            return iSeq.length();
-        }
-
-        @Override
-        public Chromosome<MetaGene> newInstance() {
-            ISeq<MetaGene> genes = ISeq.empty();
-            for (int i = 0; i < length; i++) {
-                genes = genes.append(MetaGene.getRandom());
-            }
-            return new MetaChromosome(genes);
-        }
-
-        @Override
-        public Iterator<MetaGene> iterator() {
-            return iSeq.iterator();
-        }
-
-        @Override
-        public boolean isValid() {
-            return iSeq.stream().allMatch(MetaGene::isValid);
-        }
-
-        @Override
-        public String toString() {
-            return "MetaChromosome{" +
-                    "iSeq=" + iSeq +
-                    '}';
-        }
     }
 
 }
