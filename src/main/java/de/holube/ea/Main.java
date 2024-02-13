@@ -12,13 +12,17 @@ import static io.jenetics.engine.Limits.bySteadyFitness;
 
 public class Main extends AbstractEA {
 
+    public static void main(String[] args) {
+        new Main().run();
+    }
+
     private static int eval(Genotype<BitGene> gt) {
         return gt.chromosome()
                 .as(BitChromosome.class)
                 .bitCount();
     }
 
-    public static void main(String[] args) {
+    private void run() {
         Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(32, 0.1));
 
         Engine<BitGene, Integer> engine = Engine
@@ -31,14 +35,17 @@ public class Main extends AbstractEA {
                 )
                 .build();
 
-        List<EvolutionResult<BitGene, Integer>> results = engine.stream()
+        final List<EvolutionResult<BitGene, Integer>> results = engine.stream()
                 .limit(bySteadyFitness(50))
                 .limit(500)
                 .toList();
-        Genotype<BitGene> best = results.stream().collect(EvolutionResult.toBestGenotype());
-
+        final Genotype<BitGene> best = results.stream().collect(EvolutionResult.toBestGenotype());
         System.out.println(best);
-        plot(results);
+
+        List<EvolutionResult<? extends Gene<?, ?>, Integer>> genericResults = results.stream()
+                .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
+                .toList();
+        plot(genericResults);
     }
 
 }

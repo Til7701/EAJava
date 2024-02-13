@@ -1,6 +1,5 @@
 package de.holube.ea.util;
 
-import io.jenetics.BitGene;
 import io.jenetics.Phenotype;
 import io.jenetics.engine.EvolutionResult;
 import lombok.Getter;
@@ -18,7 +17,7 @@ public class GenerationStatisticsList {
     private final List<Integer> generationList;
     private final List<GenerationStatistics> generationStatistics;
 
-    GenerationStatisticsList(List<EvolutionResult<BitGene, Integer>> results) {
+    GenerationStatisticsList(List<EvolutionResult<?, Integer>> results) {
         generationList = new ArrayList<>(results.size());
         for (int i = 1; i <= results.size(); i++)
             generationList.add(i);
@@ -47,7 +46,7 @@ public class GenerationStatisticsList {
 
         IntSummaryStatistics fitnessStats;
 
-        GenerationStatistics(EvolutionResult<BitGene, Integer> evolutionResult) {
+        GenerationStatistics(EvolutionResult<?, Integer> evolutionResult) {
             fitnessStats = evolutionResult.population().stream()
                     .map(Phenotype::fitness)
                     .flatMapToInt(IntStream::of)

@@ -1,6 +1,6 @@
 package de.holube.ea.util;
 
-import io.jenetics.BitGene;
+import io.jenetics.Gene;
 import io.jenetics.engine.EvolutionResult;
 import org.knowm.xchart.VectorGraphicsEncoder;
 import org.knowm.xchart.XYChart;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public abstract class AbstractEA {
 
-    public static void plot(List<EvolutionResult<BitGene, Integer>> results) {
+    public void plot(List<EvolutionResult<? extends Gene<?, ?>, Integer>> results) {
         GenerationStatisticsList generationStatistics = new GenerationStatisticsList(results);
 
         // Curate Data
@@ -49,13 +49,13 @@ public abstract class AbstractEA {
         saveChart(chart);
     }
 
-    private static XYChartBuilder create() {
+    private XYChartBuilder create() {
         return new XYChartBuilder()
                 .width(400).height(300)
                 .theme(Styler.ChartTheme.Matlab);
     }
 
-    private static void saveChart(Chart<?, ?> chart) {
+    private void saveChart(Chart<?, ?> chart) {
         try {
             File outputDir = new File("./output");
             if (!outputDir.exists()) {
