@@ -2,6 +2,7 @@ package de.holube.ea;
 
 import de.holube.ea.plot.ResultPlot;
 import de.holube.ea.util.AbstractEA;
+import de.holube.ea.util.GenerationStatisticsList;
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
@@ -46,7 +47,7 @@ public class Main extends AbstractEA {
         List<EvolutionResult<? extends Gene<?, ?>, Integer>> genericResults = results.stream()
                 .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                 .toList();
-        ResultPlot.plot(genericResults);
+        new ResultPlot(new GenerationStatisticsList(genericResults)).plotAll();
     }
 
 }

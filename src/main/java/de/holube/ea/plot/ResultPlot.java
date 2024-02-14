@@ -1,10 +1,6 @@
 package de.holube.ea.plot;
 
 import de.holube.ea.util.GenerationStatisticsList;
-import io.jenetics.Gene;
-import io.jenetics.engine.EvolutionResult;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.knowm.xchart.VectorGraphicsEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -17,46 +13,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.NONE)
 public class ResultPlot {
 
-    public static void plot(List<EvolutionResult<? extends Gene<?, ?>, Integer>> results) {
-        GenerationStatisticsList generationStatistics = new GenerationStatisticsList(results);
+    private final XYChart chart;
+    private final GenerationStatisticsList generationStatistics;
+    private final List<Integer> xGenerations;
+    private boolean legend = false;
 
-        // Curate Data
-        List<Integer> xGenerations = generationStatistics.getGenerationList();
-        List<Double> yAverageFitness = generationStatistics.averageFitness();
-        List<Double> yBestFitness = generationStatistics.bestFitness();
-
-        // Prepare Chart
-        XYChart chart = create()
-                .title("Average Fitness")
-                .xAxisTitle("Generations")
-                .yAxisTitle("Average Fitness")
-                .build();
-        chart.getStyler().setLegendVisible(false);
-        // Setting Series
-        XYSeries series = chart.addSeries("Average Fitness", xGenerations, yAverageFitness);
-        series.setMarker(SeriesMarkers.NONE);
-        saveChart(chart);
-
-        // Prepare Chart
-        chart = create()
-                .title("Best Fitness")
-                .xAxisTitle("Generations")
-                .yAxisTitle("Best Fitness")
-                .build();
-        chart.getStyler().setLegendVisible(false);
-        // Setting Series
-        series = chart.addSeries("Best Fitness", xGenerations, yBestFitness);
-        series.setMarker(SeriesMarkers.NONE);
-        saveChart(chart);
-    }
-
-    private static XYChartBuilder create() {
-        return new XYChartBuilder()
+    public ResultPlot(GenerationStatisticsList generationStatistics) {
+        this.generationStatistics = generationStatistics;
+        xGenerations = generationStatistics.getGenerationList();
+        chart = new XYChartBuilder()
                 .width(400).height(300)
-                .theme(Styler.ChartTheme.Matlab);
+                .theme(Styler.ChartTheme.Matlab)
+                .xAxisTitle("Generations")
+                .yAxisTitle("Fitness")
+                .title("Fitness")
+                .build();
     }
 
     private static void saveChart(Chart<?, ?> chart) {
@@ -69,6 +42,59 @@ public class ResultPlot {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void plotAllSeparately() {
+        new ResultPlot(generationStatistics)
+                .plotBestFitness()
+                .setTitle("Best Fitness")
+                .plot();
+
+        new ResultPlot(generationStatistics)
+                .plotAverageFitness()
+                .setTitle("Average Fitness")
+                .plot();
+    }
+
+    public void plotAll() {
+        this.plotBestFitness()
+                .plotAverageFitness()
+                .setLegend(true)
+                .plot();
+
+        this.plotAllSeparately();
+    }
+
+    public void plot() {
+        chart.getStyler().setLegendVisible(legend);
+        saveChart(chart);
+    }
+
+    public ResultPlot plotAverageFitness() {
+        List<Double> yAverageFitness = generationStatistics.averageFitness();
+        XYSeries series = chart.addSeries("Average Fitness", xGenerations, yAverageFitness);
+        series.setMarker(SeriesMarkers.NONE);
+        return this;
+    }
+
+    public ResultPlot plotBestFitness() {
+        List<Double> yBestFitness = generationStatistics.bestFitness();
+        XYSeries series = chart.addSeries("Best Fitness", xGenerations, yBestFitness);
+        series.setMarker(SeriesMarkers.NONE);
+        return this;
+    }
+
+    public ResultPlot setLegend(boolean value) {
+        this.legend = value;
+        if (legend) {
+            chart.getStyler().setLegendPosition(Styler.LegendPosition.InsideSE);
+        }
+        return this;
+    }
+
+    public ResultPlot setTitle(String title) {
+        chart.setTitle(title);
+        return this;
     }
 
 }

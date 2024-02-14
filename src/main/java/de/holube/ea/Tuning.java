@@ -1,6 +1,7 @@
 package de.holube.ea;
 
 import de.holube.ea.plot.ResultPlot;
+import de.holube.ea.util.GenerationStatisticsList;
 import io.jenetics.Gene;
 import io.jenetics.engine.EvolutionResult;
 
@@ -14,7 +15,7 @@ public class Tuning {
         var genericResults = ea.getResults().stream()
                 .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                 .toList();
-        ResultPlot.plot(genericResults);
+        new ResultPlot(new GenerationStatisticsList(genericResults)).plotAll();
     }
 
 }

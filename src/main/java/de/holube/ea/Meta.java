@@ -5,6 +5,7 @@ import de.holube.ea.meta.MetaGene;
 import de.holube.ea.meta.MetaModel;
 import de.holube.ea.plot.ResultPlot;
 import de.holube.ea.util.AbstractEA;
+import de.holube.ea.util.GenerationStatisticsList;
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
@@ -62,7 +63,7 @@ public class Meta extends AbstractEA {
         List<EvolutionResult<? extends Gene<?, ?>, Integer>> genericResults = results.stream()
                 .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                 .toList();
-        ResultPlot.plot(genericResults);
+        new ResultPlot(new GenerationStatisticsList(genericResults)).plotAll();
     }
 
 }
