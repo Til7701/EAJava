@@ -9,17 +9,11 @@ import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
 import io.jenetics.util.Factory;
 import io.jenetics.util.ISeq;
-import io.jenetics.util.RandomRegistry;
 
+import java.util.IntSummaryStatistics;
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-
-import static io.jenetics.engine.Limits.bySteadyFitness;
 
 public class Meta extends AbstractEA {
-
-    private static final int META_RANDOM_SEED = 245698;
 
     public static void main(String[] args) {
         new Meta().run();
@@ -33,28 +27,15 @@ public class Meta extends AbstractEA {
 
     private static int evalMeta(Genotype<MetaGene> gt) {
         final int limit = 500;
-        RandomRegistry.random(new Random(META_RANDOM_SEED));
+        final MetaModel metaModel = gt.gene().metaModel();
+        final IntSummaryStatistics summaryStatistics = new IntSummaryStatistics();
 
-        MetaModel metaModel = gt.gene().metaModel();
-        Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(8, 0.1));
-
-        Engine<BitGene, Integer> engine = Engine
-                .builder(Meta::eval, gtf)
-                .populationSize(metaModel.population())
-                .alterers(
-                        new Mutator<>(metaModel.mutationRate())
-                )
-                .build();
-
-        List<EvolutionResult<BitGene, Integer>> results = engine.stream()
-                .limit(bySteadyFitness(50))
-                .limit(limit)
-                .toList();
-
-        final Optional<Integer> bestFitness = results.stream()
-                .map(EvolutionResult::bestFitness)
-                .max(Integer::compare);
-        return limit - results.size() + bestFitness.orElse(0);
+        for (int i = 0; i < 10; i++) {
+            First80s algo = new First80s();
+            int best = algo.run(metaModel.population(), metaModel.mutationRate(), metaModel.mutationRate());
+            summaryStatistics.accept(limit - algo.getResults().size() + best);
+        }
+        return (int) summaryStatistics.getAverage();
     }
 
     public void run() {
@@ -71,7 +52,7 @@ public class Meta extends AbstractEA {
                 .build();
 
         List<EvolutionResult<MetaGene, Integer>> results = engine.stream()
-                .limit(bySteadyFitness(50))
+                //.limit(bySteadyFitness(50))
                 .limit(500)
                 .toList();
         Genotype<MetaGene> best = results.stream().collect(EvolutionResult.toBestGenotype());

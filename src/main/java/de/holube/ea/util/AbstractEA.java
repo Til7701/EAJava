@@ -2,6 +2,8 @@ package de.holube.ea.util;
 
 import io.jenetics.Gene;
 import io.jenetics.engine.EvolutionResult;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.knowm.xchart.VectorGraphicsEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
@@ -14,9 +16,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.NONE)
 public abstract class AbstractEA {
 
-    public void plot(List<EvolutionResult<? extends Gene<?, ?>, Integer>> results) {
+    public static void plot(List<EvolutionResult<? extends Gene<?, ?>, Integer>> results) {
         GenerationStatisticsList generationStatistics = new GenerationStatisticsList(results);
 
         // Curate Data
@@ -49,13 +52,13 @@ public abstract class AbstractEA {
         saveChart(chart);
     }
 
-    private XYChartBuilder create() {
+    private static XYChartBuilder create() {
         return new XYChartBuilder()
                 .width(400).height(300)
                 .theme(Styler.ChartTheme.Matlab);
     }
 
-    private void saveChart(Chart<?, ?> chart) {
+    private static void saveChart(Chart<?, ?> chart) {
         try {
             File outputDir = new File("./output");
             if (!outputDir.exists()) {

@@ -1,5 +1,6 @@
 package de.holube.ea.util;
 
+import io.jenetics.Gene;
 import io.jenetics.Phenotype;
 import io.jenetics.engine.EvolutionResult;
 import lombok.Getter;
@@ -17,7 +18,7 @@ public class GenerationStatisticsList {
     private final List<Integer> generationList;
     private final List<GenerationStatistics> generationStatistics;
 
-    GenerationStatisticsList(List<EvolutionResult<?, Integer>> results) {
+    GenerationStatisticsList(List<EvolutionResult<? extends Gene<?, ?>, Integer>> results) {
         generationList = new ArrayList<>(results.size());
         for (int i = 1; i <= results.size(); i++)
             generationList.add(i);
