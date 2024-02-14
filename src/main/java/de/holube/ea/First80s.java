@@ -14,17 +14,6 @@ public class First80s extends AbstractEA {
 
     private List<EvolutionResult<BitGene, Integer>> results = null;
 
-    public static void main(String[] args) {
-        First80s algo = new First80s();
-        int best = algo.run(50, 0.6, 0.001);
-        System.out.println(best);
-
-        List<EvolutionResult<? extends Gene<?, ?>, Integer>> genericResults = algo.getResults().stream()
-                .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
-                .toList();
-        plot(genericResults);
-    }
-
     private static int eval(Genotype<BitGene> gt) {
         return gt.chromosome()
                 .as(BitChromosome.class)

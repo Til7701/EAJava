@@ -3,6 +3,7 @@ package de.holube.ea;
 import de.holube.ea.meta.MetaChromosome;
 import de.holube.ea.meta.MetaGene;
 import de.holube.ea.meta.MetaModel;
+import de.holube.ea.plot.ResultPlot;
 import de.holube.ea.util.AbstractEA;
 import io.jenetics.*;
 import io.jenetics.engine.Engine;
@@ -61,7 +62,7 @@ public class Meta extends AbstractEA {
         List<EvolutionResult<? extends Gene<?, ?>, Integer>> genericResults = results.stream()
                 .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                 .toList();
-        plot(genericResults);
+        ResultPlot.plot(genericResults);
     }
 
 }
