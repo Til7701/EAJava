@@ -9,6 +9,8 @@ import lombok.Getter;
 
 import java.util.List;
 
+import static io.jenetics.engine.Limits.bySteadyFitness;
+
 @Getter
 public class First80s extends AbstractEA {
 
@@ -35,7 +37,7 @@ public class First80s extends AbstractEA {
                 .build();
 
         results = engine.stream()
-                //.limit(bySteadyFitness(50))
+                .limit(bySteadyFitness(50))
                 .limit(1000)
                 .toList();
         final Phenotype<BitGene, Integer> best = results.stream().collect(EvolutionResult.toBestPhenotype());

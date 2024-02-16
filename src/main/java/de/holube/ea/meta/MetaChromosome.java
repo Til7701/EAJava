@@ -3,61 +3,58 @@ package de.holube.ea.meta;
 import io.jenetics.Chromosome;
 import io.jenetics.util.ISeq;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 public class MetaChromosome implements Chromosome<MetaGene> {
 
-    private final int length;
-    private ISeq<MetaGene> iSeq;
+    private MetaGene gene;
 
-    public MetaChromosome(ISeq<MetaGene> genes) {
-        this.iSeq = genes;
-        this.length = iSeq.length();
+    public MetaChromosome(MetaGene gene) {
+        this.gene = gene;
     }
 
-    public static MetaChromosome of(ISeq<MetaGene> genes) {
-        return new MetaChromosome(genes);
+    public static MetaChromosome of(MetaGene gene) {
+        return new MetaChromosome(gene);
     }
 
     @Override
     public Chromosome<MetaGene> newInstance(ISeq<MetaGene> iSeq) {
-        this.iSeq = iSeq;
+        this.gene = iSeq.get(0);
         return this;
     }
 
     @Override
     public MetaGene get(int index) {
-        return iSeq.get(index);
+        if (index > 0)
+            throw new IllegalArgumentException();
+        return gene;
     }
 
     @Override
     public int length() {
-        return iSeq.length();
+        return 1;
     }
 
     @Override
     public Chromosome<MetaGene> newInstance() {
-        ISeq<MetaGene> genes = ISeq.empty();
-        for (int i = 0; i < length; i++) {
-            genes = genes.append(MetaGene.getRandom());
-        }
-        return new MetaChromosome(genes);
+        return new MetaChromosome(gene.newInstance());
     }
 
     @Override
     public Iterator<MetaGene> iterator() {
-        return iSeq.iterator();
+        return Collections.singleton(gene).iterator();
     }
 
     @Override
     public boolean isValid() {
-        return iSeq.stream().allMatch(MetaGene::isValid);
+        return gene.isValid();
     }
 
     @Override
     public String toString() {
         return "MetaChromosome{" +
-                "iSeq=" + iSeq +
+                "gene=" + gene +
                 '}';
     }
 

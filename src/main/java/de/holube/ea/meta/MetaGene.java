@@ -4,8 +4,8 @@ import io.jenetics.Gene;
 
 public record MetaGene(MetaModel metaModel) implements Gene<MetaModel, MetaGene> {
 
-    public static MetaGene getRandom() {
-        return new MetaGene(MetaModel.getRandom());
+    public MetaGene getRandom() {
+        return new MetaGene(metaModel.getRandom());
     }
 
     @Override
@@ -15,7 +15,7 @@ public record MetaGene(MetaModel metaModel) implements Gene<MetaModel, MetaGene>
 
     @Override
     public MetaGene newInstance() {
-        return new MetaGene(MetaModel.getRandom());
+        return new MetaGene(metaModel.getRandom());
     }
 
     @Override
