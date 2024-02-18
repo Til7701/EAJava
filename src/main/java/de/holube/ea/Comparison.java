@@ -9,7 +9,8 @@ import io.jenetics.engine.EvolutionResult;
 public class Comparison {
 
     public static void main(String[] args) {
-        ResultPlot resultPlot;
+        ResultPlot averagePlot = new ResultPlot("Average Fitness");
+        ResultPlot bestPlot = new ResultPlot("Best Fitness");
         final int runs = 100;
 
         ResultCombiner resultCombiner = new ResultCombiner();
@@ -20,9 +21,14 @@ public class Comparison {
                     .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                     .toList();
             resultCombiner.accept(new GenerationStatisticsList(genericResults));
+            averagePlot.other(new GenerationStatisticsList(genericResults)).plotAverageFitness(true);
         }
-        resultPlot = new ResultPlot(resultCombiner.getAverage())
-                .plotAverageFitness();
+        averagePlot.other(resultCombiner.getAverage())
+                .plotAverageFitness()
+                .nextColor();
+        bestPlot.other(resultCombiner.getAverage())
+                .plotBestFitness()
+                .nextColor();
 
         resultCombiner = new ResultCombiner();
         for (int i = 0; i < runs; i++) {
@@ -32,10 +38,13 @@ public class Comparison {
                     .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                     .toList();
             resultCombiner.accept(new GenerationStatisticsList(genericResults));
+            averagePlot.other(new GenerationStatisticsList(genericResults)).plotAverageFitness(true);
         }
-        resultPlot.other(resultCombiner.getAverage())
+        averagePlot.other(resultCombiner.getAverage())
                 .plotAverageFitness()
-                .setLegend(true)
+                .plot();
+        bestPlot.other(resultCombiner.getAverage())
+                .plotBestFitness()
                 .plot();
     }
 

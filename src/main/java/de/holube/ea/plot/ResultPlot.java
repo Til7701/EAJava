@@ -9,6 +9,7 @@ import org.knowm.xchart.internal.chartpart.Chart;
 import org.knowm.xchart.style.Styler;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -16,21 +17,27 @@ import java.util.List;
 public class ResultPlot {
 
     private final XYChart chart;
+    private final List<Color> colors = List.of(Color.BLUE, new Color(0, 150, 0), Color.RED);
     private List<Integer> xGenerations;
     private GenerationStatisticsList generationStatistics;
     private boolean legend = false;
     private int iteration = 0;
+    private int colorIndex = 0;
 
-    public ResultPlot(GenerationStatisticsList generationStatistics) {
-        this.generationStatistics = generationStatistics;
-        xGenerations = generationStatistics.getGenerationList();
+    public ResultPlot(String title) {
         chart = new XYChartBuilder()
                 .width(400).height(300)
                 .theme(Styler.ChartTheme.Matlab)
                 .xAxisTitle("Generations")
                 .yAxisTitle("Fitness")
-                .title("Fitness")
+                .title(title)
                 .build();
+    }
+
+    public ResultPlot(GenerationStatisticsList generationStatistics) {
+        this("Fitness");
+        this.generationStatistics = generationStatistics;
+        xGenerations = generationStatistics.getGenerationList();
     }
 
     private static void saveChart(Chart<?, ?> chart) {
@@ -72,14 +79,25 @@ public class ResultPlot {
     }
 
     public ResultPlot plotAverageFitness() {
-        return plotAverageFitness("Average Fitness" + getIteration());
+        return plotAverageFitness("Average Fitness" + getIteration(), false);
     }
 
-    public ResultPlot plotAverageFitness(String label) {
+    public ResultPlot plotAverageFitness(boolean transparent) {
+        return plotAverageFitness("Average Fitness" + getIteration(), transparent);
+    }
+
+    public ResultPlot plotAverageFitness(String label, boolean transparent) {
         List<Double> yAverageFitness = generationStatistics.averageFitness();
         XYSeries series = chart.addSeries(label, xGenerations, yAverageFitness);
         series.setMarker(SeriesMarkers.NONE);
+        Color color = colors.get(colorIndex);
+        if (transparent) color = getMoreTransparent(color);
+        series.setLineColor(color);
         return this;
+    }
+
+    private Color getMoreTransparent(Color color) {
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), 2);
     }
 
     public ResultPlot plotBestFitness() {
@@ -110,6 +128,11 @@ public class ResultPlot {
         this.generationStatistics = generationStatistics;
         xGenerations = generationStatistics.getGenerationList();
         iteration++;
+        return this;
+    }
+
+    public ResultPlot nextColor() {
+        colorIndex++;
         return this;
     }
 
