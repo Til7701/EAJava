@@ -28,14 +28,13 @@ public class Meta extends AbstractEA {
     }
 
     private static int evalMeta(Genotype<MetaGene> gt) {
-        final int limit = 500;
         final MetaModel metaModel = gt.gene().metaModel();
         final IntSummaryStatistics summaryStatistics = new IntSummaryStatistics();
 
         for (int i = 0; i < 10; i++) {
-            First80s algo = new First80s();
-            int best = algo.run(metaModel.population(), metaModel.mutationRate(), metaModel.mutationRate());
-            summaryStatistics.accept(limit - algo.getResults().size() + best);
+            First80s ea = new First80s();
+            int best = ea.run(metaModel.population(), metaModel.mutationRate(), metaModel.mutationRate());
+            summaryStatistics.accept(ea.getResults().size() - best);
         }
         return (int) summaryStatistics.getAverage();
     }
@@ -45,6 +44,7 @@ public class Meta extends AbstractEA {
 
         Engine<MetaGene, Integer> engine = Engine
                 .builder(Meta::evalMeta, gtf)
+                .minimizing()
                 .populationSize(4)
                 //.survivorsSelector(new TournamentSelector<>(5))
                 //.offspringSelector(new RouletteWheelSelector<>())
