@@ -6,14 +6,22 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ResultCombiner {
 
     private final List<GenerationStatisticsList> results = new ArrayList<>();
 
+    private final Lock lock = new ReentrantLock();
 
     public void accept(GenerationStatisticsList generationStatisticsList) {
-        results.add(generationStatisticsList);
+        lock.lock();
+        try {
+            results.add(generationStatisticsList);
+        } finally {
+            lock.unlock();
+        }
     }
 
     public GenerationStatisticsList getAverage() {

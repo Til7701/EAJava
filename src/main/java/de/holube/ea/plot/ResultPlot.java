@@ -32,7 +32,7 @@ public class ResultPlot {
                 .yAxisTitle("Fitness")
                 .title(title)
                 .build();
-        chart.getStyler().setYAxisMin(1D);
+        //chart.getStyler().setYAxisMin(1D);
         chart.getStyler().setYAxisTickMarkSpacingHint(100);
         chart.getStyler().setXAxisMin(1D);
         chart.getStyler().setXAxisTickMarkSpacingHint(200);
@@ -96,23 +96,33 @@ public class ResultPlot {
         XYSeries series = chart.addSeries(label, xGenerations, yAverageFitness);
         series.setMarker(SeriesMarkers.NONE);
         Color color = colors.get(colorIndex);
-        if (transparent) color = getMoreTransparent(color);
+        if (transparent) {
+            color = getMoreTransparent(color);
+            series.setLineWidth(0.2f);
+        }
         series.setLineColor(color);
         return this;
     }
 
     private Color getMoreTransparent(Color color) {
-        return new Color(color.getRed(), color.getGreen(), color.getBlue(), 2);
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), 50);
     }
 
     public ResultPlot plotBestFitness() {
-        return plotBestFitness("Best Fitness" + getIteration());
+        return plotBestFitness("Best Fitness" + getIteration(), false);
     }
 
-    public ResultPlot plotBestFitness(String label) {
+    public ResultPlot plotBestFitness(boolean transparent) {
+        return plotBestFitness("Best Fitness" + getIteration(), transparent);
+    }
+
+    public ResultPlot plotBestFitness(String label, boolean transparent) {
         List<Double> yBestFitness = generationStatistics.bestFitness();
         XYSeries series = chart.addSeries(label, xGenerations, yBestFitness);
         series.setMarker(SeriesMarkers.NONE);
+        Color color = colors.get(colorIndex);
+        if (transparent) color = getMoreTransparent(color);
+        series.setLineColor(color);
         return this;
     }
 
