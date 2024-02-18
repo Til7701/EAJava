@@ -16,9 +16,10 @@ import java.util.List;
 public class ResultPlot {
 
     private final XYChart chart;
-    private final GenerationStatisticsList generationStatistics;
-    private final List<Integer> xGenerations;
+    private List<Integer> xGenerations;
+    private GenerationStatisticsList generationStatistics;
     private boolean legend = false;
+    private int iteration = 0;
 
     public ResultPlot(GenerationStatisticsList generationStatistics) {
         this.generationStatistics = generationStatistics;
@@ -71,15 +72,23 @@ public class ResultPlot {
     }
 
     public ResultPlot plotAverageFitness() {
+        return plotAverageFitness("Average Fitness" + getIteration());
+    }
+
+    public ResultPlot plotAverageFitness(String label) {
         List<Double> yAverageFitness = generationStatistics.averageFitness();
-        XYSeries series = chart.addSeries("Average Fitness", xGenerations, yAverageFitness);
+        XYSeries series = chart.addSeries(label, xGenerations, yAverageFitness);
         series.setMarker(SeriesMarkers.NONE);
         return this;
     }
 
     public ResultPlot plotBestFitness() {
+        return plotBestFitness("Best Fitness" + getIteration());
+    }
+
+    public ResultPlot plotBestFitness(String label) {
         List<Double> yBestFitness = generationStatistics.bestFitness();
-        XYSeries series = chart.addSeries("Best Fitness", xGenerations, yBestFitness);
+        XYSeries series = chart.addSeries(label, xGenerations, yBestFitness);
         series.setMarker(SeriesMarkers.NONE);
         return this;
     }
@@ -95,6 +104,17 @@ public class ResultPlot {
     public ResultPlot setTitle(String title) {
         chart.setTitle(title);
         return this;
+    }
+
+    public ResultPlot other(GenerationStatisticsList generationStatistics) {
+        this.generationStatistics = generationStatistics;
+        xGenerations = generationStatistics.getGenerationList();
+        iteration++;
+        return this;
+    }
+
+    private String getIteration() {
+        return iteration == 0 ? "" : String.valueOf(iteration);
     }
 
 }
