@@ -19,6 +19,11 @@ public class GenerationStatisticsList {
     private final List<GenerationStatistics> generationStatistics;
 
     public GenerationStatisticsList(List<EvolutionResult<? extends Gene<?, ?>, Integer>> results) {
+        if (results == null) {
+            generationList = null;
+            generationStatistics = null;
+            return;
+        }
         generationList = new ArrayList<>(results.size());
         for (int i = 1; i <= results.size(); i++)
             generationList.add(i);

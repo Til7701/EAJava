@@ -10,10 +10,9 @@ import io.jenetics.*;
 import io.jenetics.engine.Engine;
 import io.jenetics.engine.EvolutionResult;
 import io.jenetics.util.Factory;
-import io.jenetics.util.ISeq;
 
-import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Meta extends AbstractEA {
 
@@ -29,24 +28,25 @@ public class Meta extends AbstractEA {
 
     private static int evalMeta(Genotype<MetaGene> gt) {
         final MetaModel metaModel = gt.gene().metaModel();
-        final IntSummaryStatistics summaryStatistics = new IntSummaryStatistics();
-
-        for (int i = 0; i < 10; i++) {
-            First80s ea = new First80s();
-            int best = ea.run(metaModel.population(), metaModel.mutationRate(), metaModel.mutationRate());
-            summaryStatistics.accept(ea.getResults().size() - best);
-        }
-        return (int) summaryStatistics.getAverage();
+        return Stream.generate(() -> 1)
+                .limit(10)
+                .parallel()
+                .mapToInt(e -> {
+                    First80s ea = new First80s();
+                    int best = ea.run(metaModel.population(), metaModel.mutationRate(), metaModel.mutationRate());
+                    return ea.getResults().size() - best;
+                })
+                .summaryStatistics().getMin();
     }
 
     public void run() {
-        Factory<Genotype<MetaGene>> gtf = Genotype.of(MetaChromosome.of(ISeq.of(new MetaGene(MetaModel.getRandom()))));
+        Factory<Genotype<MetaGene>> gtf = Genotype.of(MetaChromosome.of(new MetaGene(new MetaModel(348, 0.9))));
 
         Engine<MetaGene, Integer> engine = Engine
                 .builder(Meta::evalMeta, gtf)
                 .minimizing()
                 .populationSize(4)
-                //.survivorsSelector(new TournamentSelector<>(5))
+                .survivorsSelector(new TournamentSelector<>(2))
                 //.offspringSelector(new RouletteWheelSelector<>())
                 .alterers(
                         new Mutator<>(1)
