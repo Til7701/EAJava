@@ -24,12 +24,17 @@ public class ResultPlot {
         this.generationStatistics = generationStatistics;
         xGenerations = generationStatistics.getGenerationList();
         chart = new XYChartBuilder()
-                .width(400).height(300)
+                .width(600).height(400)
                 .theme(Styler.ChartTheme.Matlab)
                 .xAxisTitle("Generations")
                 .yAxisTitle("Fitness")
                 .title("Fitness")
                 .build();
+        chart.getStyler().setYAxisMin(1D);
+        chart.getStyler().setYAxisTickMarkSpacingHint(100);
+        chart.getStyler().setXAxisMin(1D);
+        chart.getStyler().setXAxisTickMarkSpacingHint(200);
+        chart.getStyler().setXAxisLabelRotation(30);
     }
 
     private static void saveChart(Chart<?, ?> chart) {
