@@ -71,6 +71,7 @@ public class ResultPlot {
 
     public void plotAll() {
         this.plotBestFitness()
+                .nextColor()
                 .plotAverageFitness()
                 .setLegend(true)
                 .plot();
@@ -99,6 +100,7 @@ public class ResultPlot {
         if (transparent) {
             color = getMoreTransparent(color);
             series.setLineWidth(0.2f);
+            series.setShowInLegend(false);
         }
         series.setLineColor(color);
         return this;

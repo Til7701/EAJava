@@ -3,15 +3,16 @@ package de.holube.ea.meta;
 import io.jenetics.util.RandomRegistry;
 
 public record MetaModel(
-
         int population,
-        double mutationRate
+        double mutationRate,
+        double crossoverRate
 ) {
 
     public MetaModel getRandom() {
         return new MetaModel(
-                this.mutatePopulation(),
-                mutateMutationRate()
+                mutatePopulation(),
+                mutateMutationRate(),
+                mutateCrossoverRate()
         );
     }
 
@@ -31,12 +32,12 @@ public record MetaModel(
         return newMutationRate;
     }
 
-    @Override
-    public String toString() {
-        return "MetaModel{" +
-                "population=" + population +
-                ", mutationRate=" + mutationRate +
-                '}';
+    private double mutateCrossoverRate() {
+        double newCrossoverRate;
+        do {
+            newCrossoverRate = crossoverRate + RandomRegistry.random().nextDouble(-1, 1);
+        } while (newCrossoverRate < 0 || newCrossoverRate > 1);
+        return newCrossoverRate;
     }
 
 }

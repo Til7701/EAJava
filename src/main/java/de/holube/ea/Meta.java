@@ -14,6 +14,8 @@ import io.jenetics.util.Factory;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static io.jenetics.engine.Limits.bySteadyFitness;
+
 public class Meta extends AbstractEA {
 
     public static void main(String[] args) {
@@ -28,33 +30,33 @@ public class Meta extends AbstractEA {
 
     private static int evalMeta(Genotype<MetaGene> gt) {
         final MetaModel metaModel = gt.gene().metaModel();
-        return Stream.generate(() -> 1)
-                .limit(10)
+        return (int) Stream.generate(() -> 1)
+                .limit(50)
                 .parallel()
                 .mapToInt(e -> {
                     First80s ea = new First80s();
-                    int best = ea.run(metaModel.population(), metaModel.mutationRate(), metaModel.mutationRate());
+                    int best = ea.run(metaModel.population(), metaModel.crossoverRate(), metaModel.mutationRate());
                     return ea.getResults().size() - best;
                 })
-                .summaryStatistics().getMin();
+                .summaryStatistics().getAverage();
     }
 
     public void run() {
-        Factory<Genotype<MetaGene>> gtf = Genotype.of(MetaChromosome.of(new MetaGene(new MetaModel(348, 0.9))));
+        Factory<Genotype<MetaGene>> gtf = Genotype.of(MetaChromosome.of(new MetaGene(new MetaModel(348, 0.9, 0.9))));
 
         Engine<MetaGene, Integer> engine = Engine
                 .builder(Meta::evalMeta, gtf)
                 .minimizing()
-                .populationSize(4)
-                .survivorsSelector(new TournamentSelector<>(2))
-                //.offspringSelector(new RouletteWheelSelector<>())
+                .populationSize(20)
+                .offspringSelector(new TournamentSelector<>(2))
+                .survivorsSelector(new EliteSelector<>())
                 .alterers(
                         new Mutator<>(1)
                 )
                 .build();
 
         List<EvolutionResult<MetaGene, Integer>> results = engine.stream()
-                //.limit(bySteadyFitness(50))
+                .limit(bySteadyFitness(50))
                 .limit(500)
                 .toList();
         Genotype<MetaGene> best = results.stream().collect(EvolutionResult.toBestGenotype());
