@@ -19,39 +19,43 @@ public class Comparison {
         Stream.generate(() -> 0).limit(runs).parallel()
                 .map(i -> {
                     First80s ea = new First80s();
-                    ea.run(50, 0.9, 0.001);
+                    ea.run(50, 0.5, 0.001);
                     var genericResults = ea.getResults().stream()
                             .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                             .toList();
                     resultCombiner.accept(new GenerationStatisticsList(genericResults));
                     return new GenerationStatisticsList(genericResults);
-
-                }).toList().forEach(list -> averagePlot.other(list).plotAverageFitness(true));
+                }).toList().forEach(list -> {
+                    averagePlot.other(list).plotAverageFitness(true);
+                    bestPlot.other(list).plotBestFitness(true);
+                });
         averagePlot.other(resultCombiner.getAverage())
                 .plotAverageFitness("Algorithm 1", false)
                 .nextColor();
         bestPlot.other(resultCombiner.getAverage())
-                .plotBestFitness()
+                .plotBestFitness("Algorithm 1", false)
                 .nextColor();
 
         final ResultCombiner resultCombiner1 = new ResultCombiner();
         Stream.generate(() -> 0).limit(runs).parallel()
                 .map(i -> {
                     First80s ea = new First80s();
-                    ea.run(25, 0.2, 0.5);
+                    ea.run(50, 0.5, 0.9);
                     var genericResults = ea.getResults().stream()
                             .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                             .toList();
                     resultCombiner1.accept(new GenerationStatisticsList(genericResults));
                     return new GenerationStatisticsList(genericResults);
-
-                }).toList().forEach(list -> averagePlot.other(list).plotAverageFitness(true));
+                }).toList().forEach(list -> {
+                    averagePlot.other(list).plotAverageFitness(true);
+                    bestPlot.other(list).plotBestFitness(true);
+                });
         averagePlot.other(resultCombiner1.getAverage())
                 .plotAverageFitness("Algorithm 2", false)
                 .setLegend(true)
                 .plot();
         bestPlot.other(resultCombiner1.getAverage())
-                .plotBestFitness()
+                .plotBestFitness("Algorithm 2", false)
                 .setLegend(true)
                 .plot();
     }
