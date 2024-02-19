@@ -11,6 +11,9 @@ import java.util.List;
 
 import static io.jenetics.engine.Limits.bySteadyFitness;
 
+/**
+ * Eiben: Parameter Control in Evolutionary Algorithms p.2
+ */
 @Getter
 public class First80s extends AbstractEA {
 

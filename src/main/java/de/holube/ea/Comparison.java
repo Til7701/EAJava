@@ -28,10 +28,10 @@ public class Comparison {
 
                 }).toList().forEach(list -> averagePlot.other(list).plotAverageFitness(true));
         averagePlot.other(resultCombiner.getAverage())
-                .plotAverageFitness("Algorithm 1", false)
+                .plotAverageFitness("Algorithm 1 Average of " + runs + " Runs", false)
                 .nextColor();
         bestPlot.other(resultCombiner.getAverage())
-                .plotBestFitness()
+                .plotBestFitness("Algorithm 1 Average of " + runs + " Runs", false)
                 .nextColor();
 
         final ResultCombiner resultCombiner1 = new ResultCombiner();
@@ -47,11 +47,11 @@ public class Comparison {
 
                 }).toList().forEach(list -> averagePlot.other(list).plotAverageFitness(true));
         averagePlot.other(resultCombiner1.getAverage())
-                .plotAverageFitness("Algorithm 2", false)
+                .plotAverageFitness("Algorithm 2 Average of " + runs + " Runs", false)
                 .setLegend(true)
                 .plot();
         bestPlot.other(resultCombiner1.getAverage())
-                .plotBestFitness()
+                .plotBestFitness("Algorithm 2 Average of " + runs + " Runs", false)
                 .setLegend(true)
                 .plot();
     }

@@ -31,7 +31,7 @@ public class Meta extends AbstractEA {
     private static int evalMeta(Genotype<MetaGene> gt) {
         final MetaModel metaModel = gt.gene().metaModel();
         return (int) Stream.generate(() -> 1)
-                .limit(50)
+                .limit(100)
                 .parallel()
                 .mapToInt(e -> {
                     First80s ea = new First80s();
@@ -42,7 +42,7 @@ public class Meta extends AbstractEA {
     }
 
     public void run() {
-        Factory<Genotype<MetaGene>> gtf = Genotype.of(MetaChromosome.of(new MetaGene(new MetaModel(348, 0.9, 0.9))));
+        Factory<Genotype<MetaGene>> gtf = Genotype.of(MetaChromosome.of(new MetaGene(new MetaModel(10, 0.1, 0.5))));
 
         Engine<MetaGene, Integer> engine = Engine
                 .builder(Meta::evalMeta, gtf)
@@ -51,7 +51,7 @@ public class Meta extends AbstractEA {
                 .offspringSelector(new TournamentSelector<>(2))
                 .survivorsSelector(new EliteSelector<>())
                 .alterers(
-                        new Mutator<>(1)
+                        new Mutator<>(0.1)
                 )
                 .build();
 

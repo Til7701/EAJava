@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 public class MetaChromosome implements Chromosome<MetaGene> {
 
-    private MetaGene gene;
+    private final MetaGene gene;
 
     public MetaChromosome(MetaGene gene) {
         this.gene = gene;
@@ -20,8 +20,7 @@ public class MetaChromosome implements Chromosome<MetaGene> {
 
     @Override
     public Chromosome<MetaGene> newInstance(ISeq<MetaGene> iSeq) {
-        this.gene = iSeq.get(0);
-        return this;
+        return new MetaChromosome(iSeq.get(0));
     }
 
     @Override
