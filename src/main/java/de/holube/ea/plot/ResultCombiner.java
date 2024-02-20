@@ -15,6 +15,21 @@ public class ResultCombiner {
 
     private final Lock lock = new ReentrantLock();
 
+    public static double calculateStandardDeviation(List<Double> list) {
+        final double sum = list.stream().mapToDouble(d -> d).sum();
+
+        final int length = list.size();
+        final double mean = sum / length;
+
+        // calculate the standard deviation
+        double standardDeviation = 0.0;
+        for (double num : list) {
+            standardDeviation += Math.pow(num - mean, 2);
+        }
+
+        return Math.sqrt(standardDeviation / length);
+    }
+
     public void accept(GenerationStatisticsList generationStatisticsList) {
         lock.lock();
         try {
@@ -56,8 +71,14 @@ public class ResultCombiner {
         List<Double> averageBestFitness = best.stream()
                 .map(e -> e.stream().mapToDouble(d -> d).average().getAsDouble())
                 .toList();
+        List<Double> sdBestFitnessPos = best.stream()
+                .map(list -> list.stream().mapToDouble(d -> d).average().getAsDouble() + calculateStandardDeviation(list))
+                .toList();
+        List<Double> sdBestFitnessNeg = best.stream()
+                .map(list -> list.stream().mapToDouble(d -> d).average().getAsDouble() - calculateStandardDeviation(list))
+                .toList();
 
-        return new CombinedResults(averageAverageFitness, averageBestFitness);
+        return new CombinedResults(averageAverageFitness, averageBestFitness, sdBestFitnessPos, sdBestFitnessNeg);
     }
 
     public static class CombinedResults extends GenerationStatisticsList {
@@ -67,13 +88,24 @@ public class ResultCombiner {
         private final List<Double> averageFitness;
         private final List<Double> bestFitness;
 
-        public CombinedResults(List<Double> averageFitness, List<Double> bestFitness) {
+        @Getter
+        private final List<Double> sdBestFitnessPos;
+        @Getter
+        private final List<Double> sdBestFitnessNeg;
+
+        public CombinedResults(List<Double> averageFitness, List<Double> bestFitness, List<Double> sdBestFitnessPos, List<Double> sdBestFitnessNeg) {
             super(null);
             generationList = new ArrayList<>(averageFitness.size());
             for (int i = 1; i <= averageFitness.size(); i++)
                 generationList.add(i);
             this.averageFitness = averageFitness;
             this.bestFitness = bestFitness;
+            this.sdBestFitnessPos = sdBestFitnessPos;
+            this.sdBestFitnessNeg = sdBestFitnessNeg;
+        }
+
+        public CombinedResults(List<Double> averageFitness, List<Double> bestFitness) {
+            this(averageFitness, bestFitness, null, null);
         }
 
         @Override

@@ -9,8 +9,6 @@ import lombok.Getter;
 
 import java.util.List;
 
-import static io.jenetics.engine.Limits.bySteadyFitness;
-
 /**
  * Eiben: Parameter Control in Evolutionary Algorithms p.2
  */
@@ -40,8 +38,8 @@ public class First80s extends AbstractEA {
                 .build();
 
         results = engine.stream()
-                .limit(bySteadyFitness(50))
-                .limit(1000)
+                //.limit(bySteadyFitness(50))
+                .limit(500)
                 .toList();
         final Phenotype<BitGene, Integer> best = results.stream().collect(EvolutionResult.toBestPhenotype());
         return best.fitness();

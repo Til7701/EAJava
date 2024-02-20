@@ -106,6 +106,14 @@ public class ResultPlot {
     }
 
     public ResultPlot plotBestFitness(String label, boolean transparent) {
+        if (generationStatistics instanceof ResultCombiner.CombinedResults combinedResults && combinedResults.getSdBestFitnessPos() != null) {
+            List<Double> yBestFitnessSDPos = combinedResults.getSdBestFitnessPos();
+            XYSeries series = chart.addSeries(label + "SD Pos", xGenerations, yBestFitnessSDPos);
+            prepareSeries(series, true);
+            List<Double> yBestFitnessSDNeg = combinedResults.getSdBestFitnessNeg();
+            XYSeries series1 = chart.addSeries(label + "SD Neg", xGenerations, yBestFitnessSDNeg);
+            prepareSeries(series1, true);
+        }
         List<Double> yBestFitness = generationStatistics.bestFitness();
         XYSeries series = chart.addSeries(label, xGenerations, yBestFitness);
         prepareSeries(series, transparent);
@@ -117,7 +125,7 @@ public class ResultPlot {
         Color color = colors.get(colorIndex);
         if (transparent) {
             color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 255).brighter();
-            series.setLineWidth(0.1f);
+            series.setLineWidth(0.5f);
             series.setShowInLegend(false);
         }
         series.setLineColor(color);
