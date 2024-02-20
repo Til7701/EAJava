@@ -8,7 +8,7 @@ import io.jenetics.engine.EvolutionResult;
 public class Tuning {
 
     public static void main(String[] args) {
-        First80s ea = new First80s();
+        DefaultEA ea = new DefaultEA();
         int best = ea.run(50, 0.6, 0.001, 32);
         System.out.println(best);
 

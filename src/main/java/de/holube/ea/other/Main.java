@@ -1,4 +1,4 @@
-package de.holube.ea;
+package de.holube.ea.other;
 
 import de.holube.ea.plot.ResultPlot;
 import de.holube.ea.util.AbstractEA;

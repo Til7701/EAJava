@@ -50,7 +50,7 @@ public class Comparison {
         final ResultCombiner resultCombiner = new ResultCombiner();
         List<Callable<GenerationStatisticsList>> runnables = IntStream.iterate(runs, count -> count > 0, count -> count - 1)
                 .mapToObj(count -> 0).<Callable<GenerationStatisticsList>>map(i -> () -> {
-                    First80s ea = new First80s();
+                    DefaultEA ea = new DefaultEA();
                     ea.run(population, crossoverRate, mutationRate, bits);
                     var genericResults = ea.getResults().stream()
                             .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
@@ -81,13 +81,13 @@ public class Comparison {
         final ResultCombiner resultCombiner = new ResultCombiner();
         List<Callable<GenerationStatisticsList>> runnables = IntStream.iterate(runs, count -> count > 0, count -> count - 1)
                 .mapToObj(count -> 0).<Callable<GenerationStatisticsList>>map(i -> () -> {
-                    First80sRechenberg ea = new First80sRechenberg();
+                    DefaultEARechenberg ea = new DefaultEARechenberg();
                     ea.run(population, crossoverRate, mutationRate, bits);
                     var genericResults = ea.getResults().stream()
                             .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                             .toList();
                     resultCombiner.accept(new GenerationStatisticsList(genericResults));
-                    pLists.add(ea.getPs());
+                    pLists.add(ea.getProbabilities());
                     return new GenerationStatisticsList(genericResults);
                 }).toList();
 

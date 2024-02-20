@@ -13,7 +13,7 @@ import java.util.List;
  * Eiben: Parameter Control in Evolutionary Algorithms p.2
  */
 @Getter
-public class First80s extends AbstractEA {
+public class DefaultEA extends AbstractEA {
 
     private List<EvolutionResult<BitGene, Integer>> results = null;
 
@@ -27,7 +27,7 @@ public class First80s extends AbstractEA {
         Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(bits, 0.5));
 
         Engine<BitGene, Integer> engine = Engine
-                .builder(First80s::eval, gtf)
+                .builder(DefaultEA::eval, gtf)
                 .populationSize(population)
                 .offspringSelector(new TournamentSelector<>(3))
                 .survivorsSelector(new EliteSelector<>())

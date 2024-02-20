@@ -1,5 +1,6 @@
-package de.holube.ea;
+package de.holube.ea.other;
 
+import de.holube.ea.DefaultEA;
 import de.holube.ea.meta.MetaChromosome;
 import de.holube.ea.meta.MetaGene;
 import de.holube.ea.meta.MetaModel;
@@ -34,7 +35,7 @@ public class Meta extends AbstractEA {
                 .limit(100)
                 .parallel()
                 .mapToInt(e -> {
-                    First80s ea = new First80s();
+                    DefaultEA ea = new DefaultEA();
                     int best = ea.run(metaModel.population(), metaModel.crossoverRate(), metaModel.mutationRate(), 32);
                     return ea.getResults().size() - best;
                 })

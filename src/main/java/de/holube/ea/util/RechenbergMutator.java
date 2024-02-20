@@ -28,10 +28,7 @@ public class RechenbergMutator<G extends Gene<?, G>, C extends Comparable<? supe
     }
 
     @Override
-    public AltererResult<G, C> alter(
-            final Seq<Phenotype<G, C>> population,
-            final long generation
-    ) {
+    public AltererResult<G, C> alter(final Seq<Phenotype<G, C>> population, final long generation) {
         // prepare
         generationCount++;
         Optional<Phenotype<G, C>> best = population.stream().sorted().findFirst();
