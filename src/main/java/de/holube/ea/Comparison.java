@@ -10,10 +10,10 @@ import java.util.stream.Stream;
 
 public class Comparison {
 
-    private final ResultPlot averagePlot = new ResultPlot("Average Fitness");
-    private final ResultPlot bestPlot = new ResultPlot("Best Fitness");
-    private final ResultPlot averageAllPlot = new ResultPlot("Average Fitness with all Runs");
-    private final ResultPlot bestAllPlot = new ResultPlot("Best Fitness with all Runs");
+    private final ResultPlot averagePlot = new ResultPlot("Average Fitness").setLegend(true);
+    private final ResultPlot bestPlot = new ResultPlot("Best Fitness").setLegend(true);
+    private final ResultPlot averageAllPlot = new ResultPlot("Average Fitness with all Runs").setLegend(true);
+    private final ResultPlot bestAllPlot = new ResultPlot("Best Fitness with all Runs").setLegend(true);
 
     public static void main(String[] args) {
         new Comparison().run(1000);
@@ -23,14 +23,10 @@ public class Comparison {
         runSingle(runs, 50, 0.5, 0.001, "Algorithm 1");
         runSingle(runs, 50, 0.5, 0.9, "Algorithm 2");
 
-        averageAllPlot.setLegend(true)
-                .plot();
-        bestAllPlot.setLegend(true)
-                .plot();
-        averagePlot.setLegend(true)
-                .plot();
-        bestPlot.setLegend(true)
-                .plot();
+        averageAllPlot.plot();
+        bestAllPlot.plot();
+        averagePlot.plot();
+        bestPlot.plot();
     }
 
     private void runSingle(final int runs,
