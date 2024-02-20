@@ -1,10 +1,7 @@
 package de.holube.ea.plot;
 
 import de.holube.ea.util.GenerationStatisticsList;
-import org.knowm.xchart.VectorGraphicsEncoder;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
+import org.knowm.xchart.*;
 import org.knowm.xchart.internal.chartpart.Chart;
 import org.knowm.xchart.style.Styler;
 import org.knowm.xchart.style.markers.SeriesMarkers;
@@ -17,7 +14,7 @@ import java.util.List;
 public class ResultPlot {
 
     private final XYChart chart;
-    private final List<Color> colors = List.of(Color.BLUE, new Color(0, 150, 0), Color.RED);
+    private final List<Color> colors = List.of(new Color(0, 0, 200), new Color(100, 200, 0), Color.RED);
     private List<Integer> xGenerations;
     private GenerationStatisticsList generationStatistics;
     private boolean legend = false;
@@ -52,6 +49,7 @@ public class ResultPlot {
                 outputDir.mkdirs();
             }
             VectorGraphicsEncoder.saveVectorGraphic(chart, "output/" + chart.getTitle(), VectorGraphicsEncoder.VectorGraphicsFormat.SVG);
+            BitmapEncoder.saveBitmapWithDPI(chart, "output/" + chart.getTitle(), BitmapEncoder.BitmapFormat.JPG, 200);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -118,8 +116,8 @@ public class ResultPlot {
         series.setMarker(SeriesMarkers.NONE);
         Color color = colors.get(colorIndex);
         if (transparent) {
-            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 50);
-            series.setLineWidth(0.2f);
+            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 255).brighter();
+            series.setLineWidth(0.1f);
             series.setShowInLegend(false);
         }
         series.setLineColor(color);

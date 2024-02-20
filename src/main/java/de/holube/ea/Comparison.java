@@ -10,54 +10,58 @@ import java.util.stream.Stream;
 
 public class Comparison {
 
-    public static void main(String[] args) {
-        ResultPlot averagePlot = new ResultPlot("Average Fitness");
-        ResultPlot bestPlot = new ResultPlot("Best Fitness");
-        final int runs = 100;
+    private final ResultPlot averagePlot = new ResultPlot("Average Fitness");
+    private final ResultPlot bestPlot = new ResultPlot("Best Fitness");
+    private final ResultPlot averageAllPlot = new ResultPlot("Average Fitness with all Runs");
+    private final ResultPlot bestAllPlot = new ResultPlot("Best Fitness with all Runs");
 
+    public static void main(String[] args) {
+        new Comparison().run(1000);
+    }
+
+    public void run(final int runs) {
+        runSingle(runs, 50, 0.5, 0.001, "Algorithm 1");
+        runSingle(runs, 50, 0.5, 0.9, "Algorithm 2");
+
+        averageAllPlot.setLegend(true)
+                .plot();
+        bestAllPlot.setLegend(true)
+                .plot();
+        averagePlot.setLegend(true)
+                .plot();
+        bestPlot.setLegend(true)
+                .plot();
+    }
+
+    private void runSingle(final int runs,
+                           final int population, final double crossoverRate, final double mutationRate,
+                           String name
+    ) {
         final ResultCombiner resultCombiner = new ResultCombiner();
         Stream.generate(() -> 0).limit(runs).parallel()
                 .map(i -> {
                     First80s ea = new First80s();
-                    ea.run(50, 0.5, 0.001);
+                    ea.run(population, crossoverRate, mutationRate);
                     var genericResults = ea.getResults().stream()
                             .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                             .toList();
                     resultCombiner.accept(new GenerationStatisticsList(genericResults));
                     return new GenerationStatisticsList(genericResults);
                 }).toList().forEach(list -> {
-                    averagePlot.other(list).plotAverageFitness(true);
-                    bestPlot.other(list).plotBestFitness(true);
+                    averageAllPlot.other(list).plotAverageFitness(true);
+                    bestAllPlot.other(list).plotBestFitness(true);
                 });
+        averageAllPlot.other(resultCombiner.getAverage())
+                .plotAverageFitness(name + " Average of " + runs + " Runs", false)
+                .nextColor();
+        bestAllPlot.other(resultCombiner.getAverage())
+                .plotBestFitness(name + " Average of " + runs + " Runs", false)
+                .nextColor();
         averagePlot.other(resultCombiner.getAverage())
-                .plotAverageFitness("Algorithm 1 Average of " + runs + " Runs", false)
+                .plotAverageFitness(name + " Average of " + runs + " Runs", false)
                 .nextColor();
         bestPlot.other(resultCombiner.getAverage())
-                .plotBestFitness("Algorithm 1 Average of " + runs + " Runs", false)
+                .plotBestFitness(name + " Average of " + runs + " Runs", false)
                 .nextColor();
-
-        final ResultCombiner resultCombiner1 = new ResultCombiner();
-        Stream.generate(() -> 0).limit(runs).parallel()
-                .map(i -> {
-                    First80s ea = new First80s();
-                    ea.run(50, 0.5, 0.9);
-                    var genericResults = ea.getResults().stream()
-                            .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
-                            .toList();
-                    resultCombiner1.accept(new GenerationStatisticsList(genericResults));
-                    return new GenerationStatisticsList(genericResults);
-                }).toList().forEach(list -> {
-                    averagePlot.other(list).plotAverageFitness(true);
-                    bestPlot.other(list).plotBestFitness(true);
-                });
-        averagePlot.other(resultCombiner1.getAverage())
-                .plotAverageFitness("Algorithm 2 Average of " + runs + " Runs", false)
-                .setLegend(true)
-                .plot();
-        bestPlot.other(resultCombiner1.getAverage())
-                .plotBestFitness("Algorithm 2 Average of " + runs + " Runs", false)
-                .setLegend(true)
-                .plot();
     }
-
 }
