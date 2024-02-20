@@ -20,12 +20,13 @@ public class Comparison {
     private final ResultPlot bestAllPlot = new ResultPlot("Best Fitness with all Runs").setLegend(true);
 
     public static void main(String[] args) {
-        new Comparison().run(10000);
+        new Comparison().run(200);
     }
 
     public void run(final int runs) {
         runSingle(runs, 50, 0.5, 0.001, "Algorithm 1");
         runSingle(runs, 50, 0.5, 0.9, "Algorithm 2");
+        runSingleR(runs, 50, 0, 0.9, "Algorithm 3");
 
         //averageAllPlot.plot();
         //bestAllPlot.plot();
@@ -49,7 +50,7 @@ public class Comparison {
                     return new GenerationStatisticsList(genericResults);
                 }).toList();
 
-        try (ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor()) {
+        try (ExecutorService pool = Executors.newFixedThreadPool(10)) {
             pool.invokeAll(runnables);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -61,6 +62,36 @@ public class Comparison {
         bestAllPlot.other(resultCombiner.getAverage())
                 .plotBestFitness(name + " Average of " + runs + " Runs", false)
                 .nextColor();
+        averagePlot.other(resultCombiner.getAverage())
+                .plotAverageFitness(name + " Average of " + runs + " Runs", false)
+                .nextColor();
+        bestPlot.other(resultCombiner.getAverage())
+                .plotBestFitness(name + " Average of " + runs + " Runs", false)
+                .nextColor();
+    }
+
+    private void runSingleR(final int runs,
+                            final int population, final double crossoverRate, final double mutationRate,
+                            String name
+    ) {
+        final ResultCombiner resultCombiner = new ResultCombiner();
+        List<Callable<GenerationStatisticsList>> runnables = IntStream.iterate(runs, count -> count > 0, count -> count - 1)
+                .mapToObj(count -> 0).<Callable<GenerationStatisticsList>>map(i -> () -> {
+                    First80sRechenberg ea = new First80sRechenberg();
+                    ea.run(population, crossoverRate, mutationRate);
+                    var genericResults = ea.getResults().stream()
+                            .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
+                            .toList();
+                    resultCombiner.accept(new GenerationStatisticsList(genericResults));
+                    return new GenerationStatisticsList(genericResults);
+                }).toList();
+
+        try (ExecutorService pool = Executors.newFixedThreadPool(10)) {
+            pool.invokeAll(runnables);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         averagePlot.other(resultCombiner.getAverage())
                 .plotAverageFitness(name + " Average of " + runs + " Runs", false)
                 .nextColor();
