@@ -25,6 +25,9 @@ import java.util.stream.IntStream;
 public class First80sRechenberg extends AbstractEA {
 
     private List<EvolutionResult<BitGene, Integer>> results = null;
+    @Getter
+    private List<Double> ps = null;
+
 
     private static int eval(Genotype<BitGene> gt) {
         return gt.chromosome()
@@ -65,43 +68,9 @@ public class First80sRechenberg extends AbstractEA {
                 .limit(1500)
                 .toList();
 
-        //plot(rechenbergMutator.getPs());
+        ps = rechenbergMutator.getPs();
         final Phenotype<BitGene, Integer> best = results.stream().collect(EvolutionResult.toBestPhenotype());
         return best.fitness();
-    }
-
-    private void plot(List<Double> ps) {
-        XYChart chart = new XYChartBuilder()
-                .width(600).height(400)
-                .theme(Styler.ChartTheme.Matlab)
-                .xAxisTitle("Generations")
-                .yAxisTitle("Mutation Rate")
-                .title("Mutation Rate")
-                .build();
-        //chart.getStyler().setYAxisMin(0D);
-        //chart.getStyler().setYAxisMin(1D);
-        chart.getStyler().setYAxisTickMarkSpacingHint(100);
-        chart.getStyler().setXAxisTickMarkSpacingHint(200);
-        chart.getStyler().setXAxisLabelRotation(30);
-
-        List<Integer> xGenerations = IntStream.iterate(0, i -> i + RechenbergMutator.MAX)
-                .limit(ps.size())
-                .boxed()
-                .toList();
-
-        XYSeries series = chart.addSeries("rate", xGenerations, ps);
-        series.setMarker(SeriesMarkers.NONE);
-
-        try {
-            File outputDir = new File("./output");
-            if (!outputDir.exists()) {
-                outputDir.mkdirs();
-            }
-            VectorGraphicsEncoder.saveVectorGraphic(chart, "output/" + chart.getTitle(), VectorGraphicsEncoder.VectorGraphicsFormat.SVG);
-            BitmapEncoder.saveBitmapWithDPI(chart, "output/" + chart.getTitle(), BitmapEncoder.BitmapFormat.JPG, 200);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }
