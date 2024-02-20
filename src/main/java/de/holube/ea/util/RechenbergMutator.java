@@ -4,6 +4,7 @@ import io.jenetics.*;
 import io.jenetics.internal.math.Probabilities;
 import io.jenetics.util.RandomRegistry;
 import io.jenetics.util.Seq;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +14,10 @@ import static java.lang.Math.pow;
 
 public class RechenbergMutator<G extends Gene<?, G>, C extends Comparable<? super C>> extends Mutator<G, C> {
 
-    private static final int MAX = 50;
+    public static final int MAX = 5;
     private final List<C> generationsSinceLast = new ArrayList<>();
+    @Getter
+    List<Double> ps = new ArrayList<>(500);
     private C lastBest = null;
     private int generationCount = 0;
     private double probability;
@@ -48,6 +51,7 @@ public class RechenbergMutator<G extends Gene<?, G>, C extends Comparable<? supe
                 } else {
                     probability /= factor;
                 }
+                ps.add(probability);
             }
 
             C lastGenBest = generationsSinceLast.stream().sorted().findFirst().orElse(null);

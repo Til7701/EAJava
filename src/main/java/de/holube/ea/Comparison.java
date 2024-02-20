@@ -24,14 +24,17 @@ public class Comparison {
     }
 
     public void run(final int runs) {
-        runSingle(runs, 50, 0.5, 0.001, "Algorithm 1");
-        runSingle(runs, 50, 0.5, 0.9, "Algorithm 2");
-        runSingleR(runs, 50, 0, 0.9, "Algorithm 3");
+        runSingle(runs, 10, 0.5, 0.075, "Algorithm 1");
+        runSingle(runs, 10, 0.5, 0.9, "Algorithm 2");
+        bestPlot.setTitle("Best Fitness")
+                .plot();
+        runSingleR(runs, 10, 0, 0.075, "Algorithm 3");
 
         //averageAllPlot.plot();
         //bestAllPlot.plot();
         averagePlot.plot();
-        bestPlot.plot();
+        bestPlot.setTitle("Best Fitness with Rechenberg Mutation")
+                .plot();
     }
 
     private void runSingle(final int runs,
