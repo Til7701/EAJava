@@ -34,7 +34,7 @@ public class First80sRechenberg extends AbstractEA {
 
     public static void main(String[] args) {
         First80sRechenberg ea = new First80sRechenberg();
-        ea.run(2, 0, 0.5);
+        ea.run(2, 0, 0.5, 32);
         var genericResults = ea.getResults().stream()
                 .<EvolutionResult<? extends Gene<?, ?>, Integer>>map(e -> e)
                 .toList();
@@ -45,24 +45,24 @@ public class First80sRechenberg extends AbstractEA {
                 .plot();
     }
 
-    public int run(int population, double crossoverProbability, double mutationRate) {
-        Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(128, 0.5));
+    public int run(int population, double crossoverProbability, double mutationRate, int bits) {
+        Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(bits, 0.5));
         final RechenbergMutator<BitGene, Integer> rechenbergMutator = new RechenbergMutator<>(mutationRate);
 
         Engine<BitGene, Integer> engine = Engine
                 .builder(First80sRechenberg::eval, gtf)
                 .populationSize(population)
-                //.offspringSelector(new RouletteWheelSelector<>())
+                .offspringSelector(new TournamentSelector<>(3))
                 .survivorsSelector(new EliteSelector<>())
                 .alterers(
-                        rechenbergMutator
-                        //new SinglePointCrossover<>(crossoverProbability)
+                        rechenbergMutator,
+                        new SinglePointCrossover<>(crossoverProbability)
                 )
                 .build();
 
         results = engine.stream()
                 //.limit(bySteadyFitness(50))
-                .limit(1000)
+                .limit(1500)
                 .toList();
 
         //plot(rechenbergMutator.getPs());

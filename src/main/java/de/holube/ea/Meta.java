@@ -35,7 +35,7 @@ public class Meta extends AbstractEA {
                 .parallel()
                 .mapToInt(e -> {
                     First80s ea = new First80s();
-                    int best = ea.run(metaModel.population(), metaModel.crossoverRate(), metaModel.mutationRate());
+                    int best = ea.run(metaModel.population(), metaModel.crossoverRate(), metaModel.mutationRate(), 32);
                     return ea.getResults().size() - best;
                 })
                 .summaryStatistics().getAverage();

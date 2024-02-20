@@ -31,7 +31,7 @@ public class ResultPlot {
                 .build();
         //chart.getStyler().setYAxisMin(1D);
         chart.getStyler().setYAxisTickMarkSpacingHint(100);
-        //chart.getStyler().setXAxisMin(1D);
+        chart.getStyler().setXAxisMin(32D);
         chart.getStyler().setXAxisTickMarkSpacingHint(200);
         chart.getStyler().setXAxisLabelRotation(30);
     }

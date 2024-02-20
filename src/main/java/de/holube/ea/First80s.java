@@ -23,23 +23,23 @@ public class First80s extends AbstractEA {
                 .bitCount();
     }
 
-    public int run(int population, double crossoverProbability, double mutationRate) {
-        Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(128, 0.5));
+    public int run(int population, double crossoverProbability, double mutationRate, int bits) {
+        Factory<Genotype<BitGene>> gtf = Genotype.of(BitChromosome.of(bits, 0.5));
 
         Engine<BitGene, Integer> engine = Engine
                 .builder(First80s::eval, gtf)
                 .populationSize(population)
-                //.offspringSelector(new RouletteWheelSelector<>())
+                .offspringSelector(new TournamentSelector<>(3))
                 .survivorsSelector(new EliteSelector<>())
                 .alterers(
-                        //new SinglePointCrossover<>(crossoverProbability),
-                        new Mutator<>(mutationRate)
+                        new Mutator<>(mutationRate),
+                        new SinglePointCrossover<>(crossoverProbability)
                 )
                 .build();
 
         results = engine.stream()
                 //.limit(bySteadyFitness(50))
-                .limit(1000)
+                .limit(1500)
                 .toList();
         final Phenotype<BitGene, Integer> best = results.stream().collect(EvolutionResult.toBestPhenotype());
         return best.fitness();

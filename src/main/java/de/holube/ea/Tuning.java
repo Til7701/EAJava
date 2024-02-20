@@ -9,7 +9,7 @@ public class Tuning {
 
     public static void main(String[] args) {
         First80s ea = new First80s();
-        int best = ea.run(50, 0.6, 0.001);
+        int best = ea.run(50, 0.6, 0.001, 32);
         System.out.println(best);
 
         var genericResults = ea.getResults().stream()
