@@ -34,7 +34,7 @@ public class ResultPlot {
                 .build();
         //chart.getStyler().setYAxisMin(1D);
         chart.getStyler().setYAxisTickMarkSpacingHint(100);
-        chart.getStyler().setXAxisMin(1D);
+        //chart.getStyler().setXAxisMin(1D);
         chart.getStyler().setXAxisTickMarkSpacingHint(200);
         chart.getStyler().setXAxisLabelRotation(30);
     }
@@ -95,19 +95,8 @@ public class ResultPlot {
     public ResultPlot plotAverageFitness(String label, boolean transparent) {
         List<Double> yAverageFitness = generationStatistics.averageFitness();
         XYSeries series = chart.addSeries(label, xGenerations, yAverageFitness);
-        series.setMarker(SeriesMarkers.NONE);
-        Color color = colors.get(colorIndex);
-        if (transparent) {
-            color = getMoreTransparent(color);
-            series.setLineWidth(0.2f);
-            series.setShowInLegend(false);
-        }
-        series.setLineColor(color);
+        prepareSeries(series, transparent);
         return this;
-    }
-
-    private Color getMoreTransparent(Color color) {
-        return new Color(color.getRed(), color.getGreen(), color.getBlue(), 50);
     }
 
     public ResultPlot plotBestFitness() {
@@ -121,11 +110,19 @@ public class ResultPlot {
     public ResultPlot plotBestFitness(String label, boolean transparent) {
         List<Double> yBestFitness = generationStatistics.bestFitness();
         XYSeries series = chart.addSeries(label, xGenerations, yBestFitness);
+        prepareSeries(series, transparent);
+        return this;
+    }
+
+    private void prepareSeries(XYSeries series, boolean transparent) {
         series.setMarker(SeriesMarkers.NONE);
         Color color = colors.get(colorIndex);
-        if (transparent) color = getMoreTransparent(color);
+        if (transparent) {
+            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), 50);
+            series.setLineWidth(0.2f);
+            series.setShowInLegend(false);
+        }
         series.setLineColor(color);
-        return this;
     }
 
     public ResultPlot setLegend(boolean value) {
